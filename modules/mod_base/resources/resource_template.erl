@@ -85,6 +85,10 @@ provide_content(ReqData, Context) ->
         _ -> Context2
     end,
     Template = z_context:get(template, Context3),
-    Rendered = z_template:render(Template, z_context:get_all(Context), Context3),
+    Template1 = case z_notifier:first({render_template, Template, ?MODULE}, Context3) of
+                    undefined -> Template;
+                    NewTemplate -> NewTemplate
+                end,
+    Rendered = z_template:render(Template1, z_context:get_all(Context), Context3),
     {Output, OutputContext} = z_context:output(Rendered, Context3),
     ?WM_REPLY(Output, OutputContext).

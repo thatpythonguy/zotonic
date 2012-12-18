@@ -96,7 +96,11 @@ html(Context) ->
 	RenderArgs = [ {id, Id} | z_context:get_all(Context1) ],
 	RenderFunc = fun() ->
 		Template = z_context:get(template, Context1, "page.tpl"),
-	    z_template:render(Template, RenderArgs, Context1)
+        Template1 = case z_notifier:first({render_template, Template, ?MODULE}, Context1) of
+                        undefined -> Template;
+                        NewTemplate -> NewTemplate
+                    end,
+        z_template:render(Template1, RenderArgs, Context1)
 	end,
 
 	MaxAge = z_context:get(cache_anonymous_maxage, Context1),
